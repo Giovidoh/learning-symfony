@@ -24,7 +24,8 @@ class RecipeType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Titre'
+                'label' => 'Titre',
+                'empty_data' => '',
             ])
             ->add('slug', TextType::class, [
                 'required' => false,
@@ -33,7 +34,9 @@ class RecipeType extends AbstractType
                 //     new Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: "Ceci n'est pas un slug valide.") // Expression regex qui autorise uniquement les mots séparés par des tirets sans caractères spéciaux.
                 // ]),
             ])
-            ->add('content')
+            ->add('content', TextType::class, [
+                'empty_data' => '',
+            ])
             ->add('duration', NumberType::class)
             ->add('save', SubmitType::class, [
                 'label' => 'Enregistrer'
@@ -70,6 +73,7 @@ class RecipeType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Recipe::class,
+            // 'validation_groups' => ["Default", "Extra"],
         ]);
     }
 }
