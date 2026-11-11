@@ -1,0 +1,9 @@
+{% extends 'admin/admin.html.twig' %}
+
+{% block title %}Catégorie : {{ category.name }}{% endblock %}
+
+{% block body %}
+    <h1>{{ category.name }}</h1>
+
+    {{ form(form) }}
+{% endblock %}

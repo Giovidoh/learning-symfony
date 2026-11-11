@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Requirement\Requirement;
 #[Route("/admin/recettes", name: 'admin.recipe.')]
 final class RecipeController extends AbstractController
 {
-    #[Route('/', name: 'index')]
+    #[Route('/', name: 'index', methods: ["GET"])]
     public function index(RecipeRepository $repository): Response
     {
         $recipes = $repository->findWithDurationLowerThan(20);
@@ -47,7 +47,7 @@ final class RecipeController extends AbstractController
         ]);
     }
 
-    #[Route("/create", name: "create")]
+    #[Route("/create", name: "create", methods: ["GET", "POST"])]
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         $recipe = new Recipe();
