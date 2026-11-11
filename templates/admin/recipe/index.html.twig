@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>Titre</th>
+                <th>Catégorie</th>
                 <th style="width: 200px">Actions</th>
             </tr>
         </thead>
@@ -17,6 +18,7 @@
             {% for recipe in recipes %}
                 <tr>
                     <td>{{ recipe.title }}</td>
+                    <td>{{ recipe.category.name | default('') }}</td>
                     <td>
                         <div class="d-flex gap-2">
                             <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.edit', {id: recipe.id}) }}">Éditer</a>
