@@ -9,6 +9,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PostSubmitEvent;
 use Symfony\Component\Form\Event\PreSubmitEvent;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -35,6 +36,9 @@ class RecipeType extends AbstractType
                 //     new Length(min: 10),
                 //     new Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: "Ceci n'est pas un slug valide.") // Expression regex qui autorise uniquement les mots séparés par des tirets sans caractères spéciaux.
                 // ]),
+            ])
+            ->add('thumbnailFile', FileType::class, [
+                'required' => false
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
