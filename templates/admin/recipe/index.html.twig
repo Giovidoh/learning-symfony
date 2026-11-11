@@ -1,11 +1,10 @@
-{% extends 'base.html.twig' %}
+{% extends 'admin/admin.html.twig' %}
 
 {% block title "Toutes les recettes" %}
 
 {% block body %}
     <div class="mb-4">
-        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ab quam libero, qui suscipit rerum odit soluta rem in hic quasi voluptas similique totam culpa dignissimos pariatur natus sed, nihil sequi.</p>
-        <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('recipe.create') }}">Créer une recette</a>
+        <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.create') }}">Créer une recette</a>
     </div>
     <table class="table">
         <thead>
@@ -17,13 +16,11 @@
         <tbody>
             {% for recipe in recipes %}
                 <tr>
-                    <td>
-                        <a href="{{ path('recipe.show', {id: recipe.id, slug: recipe.slug}) }}">{{ recipe.title }}</a>
-                    </td>
+                    <td>{{ recipe.title }}</td>
                     <td>
                         <div class="d-flex gap-2">
-                            <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('recipe.edit', {id: recipe.id}) }}">Éditer</a>
-                            <form action="{{ path('recipe.delete', {id: recipe.id}) }}" method="post">
+                            <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.edit', {id: recipe.id}) }}">Éditer</a>
+                            <form action="{{ path('admin.recipe.delete', {id: recipe.id}) }}" method="post">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button class="theme-danger btn-solid btn-styled btn-sm">Supprimer</button>
                             </form>
