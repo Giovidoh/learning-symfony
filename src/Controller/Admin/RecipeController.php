@@ -18,10 +18,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class RecipeController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ["GET"])]
-    public function index(RecipeRepository $repository): Response
+    public function index(Request $request, RecipeRepository $repository): Response
     {
-        $recipes = $repository->findWithDurationLowerThan(20);
-
         // Ajout
         // $recipe = new Recipe();
         // $recipe->setTitle('aboda')
@@ -43,6 +41,9 @@ final class RecipeController extends AbstractController
         //// Il faut récupérer la liste des recettes à nouveau
         //// pour avoir la liste épurée de la recette supprimée
         // $recipes = $recipeRepository->findWithDurationLowerThan(20);
+
+        $page = $request->query->getInt('page', 1);
+        $recipes = $repository->paginateRecipes(max($page, 1));
 
         return $this->render('admin/recipe/index.html.twig', [
             'recipes' => $recipes,
