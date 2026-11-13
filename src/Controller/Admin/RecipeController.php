@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\DTO\PaginationDTO;
 use App\Entity\Recipe;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
@@ -9,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -18,8 +20,11 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class RecipeController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ["GET"])]
-    public function index(Request $request, RecipeRepository $repository): Response
-    {
+    public function index(
+        RecipeRepository $repository,
+        #[MapQueryString()]
+        PaginationDTO $paginationDTO
+    ): Response {
         // Ajout
         // $recipe = new Recipe();
         // $recipe->setTitle('aboda')
@@ -42,8 +47,7 @@ final class RecipeController extends AbstractController
         //// pour avoir la liste épurée de la recette supprimée
         // $recipes = $recipeRepository->findWithDurationLowerThan(20);
 
-        $page = $request->query->getInt('page', 1);
-        $recipes = $repository->paginateRecipes(max($page, 1));
+        $recipes = $repository->paginateRecipes($paginationDTO->page);
 
         return $this->render('admin/recipe/index.html.twig', [
             'recipes' => $recipes,
