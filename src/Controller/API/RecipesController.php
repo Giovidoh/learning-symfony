@@ -13,10 +13,11 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted("ROLE_USER")]
 final class RecipesController extends AbstractController
 {
     #[Route("/api/recipes", methods: ["GET"])]
-    #[IsGranted("ROLE_USER")]
+
     public function index(
         RecipeRepository $repository,
         #[MapQueryString()]
@@ -34,7 +35,6 @@ final class RecipesController extends AbstractController
     }
 
     #[Route("/api/recipes/{id}", requirements: ['id' => Requirement::DIGITS])]
-    #[IsGranted("ROLE_USER")]
     public function show(Recipe $recipe)
     {
         return $this->json($recipe, 200, [], [
@@ -43,7 +43,6 @@ final class RecipesController extends AbstractController
     }
 
     #[Route("/api/recipes", methods: ['POST'])]
-    #[IsGranted("ROLE_USER")]
     public function create(
         #[MapRequestPayload(
             serializationContext: [

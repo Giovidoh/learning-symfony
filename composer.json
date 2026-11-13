@@ -47,6 +47,9 @@
         "vich/uploader-bundle": "^3.0"
     },
     "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "fakerphp/faker": "^1.24",
+        "jzonta/faker-restaurant": "^2.0",
         "phpunit/phpunit": "^13.4",
         "symfony/browser-kit": "8.1.*",
         "symfony/css-selector": "8.1.*",
