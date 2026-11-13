@@ -4,10 +4,13 @@ namespace App\Controller\Admin;
 
 use App\DTO\PaginationDTO;
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Form\RecipeType;
 use App\Repository\RecipeRepository;
+use App\Security\Voter\RecipeVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -16,14 +19,16 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route("/admin/recettes", name: 'admin.recipe.')]
-#[IsGranted('ROLE_ADMIN')]
+// #[IsGranted('ROLE_ADMIN')]
 final class RecipeController extends AbstractController
 {
     #[Route('/', name: 'index', methods: ["GET"])]
+    #[IsGranted(RecipeVoter::LIST)]
     public function index(
         RecipeRepository $repository,
         #[MapQueryString()]
-        PaginationDTO $paginationDTO
+        PaginationDTO $paginationDTO,
+        Security $security
     ): Response {
         // Ajout
         // $recipe = new Recipe();
@@ -47,7 +52,14 @@ final class RecipeController extends AbstractController
         //// pour avoir la liste épurée de la recette supprimée
         // $recipes = $recipeRepository->findWithDurationLowerThan(20);
 
-        $recipes = $repository->paginateRecipes($paginationDTO->page);
+        $user = $security->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $userId = $user->getId();
+        $canListAll = $security->isGranted(RecipeVoter::LIST_ALL);
+        $recipes = $repository->paginateRecipes($paginationDTO->page, $canListAll ? null : $userId);
 
         return $this->render('admin/recipe/index.html.twig', [
             'recipes' => $recipes,
@@ -55,6 +67,7 @@ final class RecipeController extends AbstractController
     }
 
     #[Route("/create", name: "create", methods: ["GET", "POST"])]
+    #[IsGranted(RecipeVoter::CREATE)]
     public function create(Request $request, EntityManagerInterface $em): Response
     {
         $recipe = new Recipe();
@@ -62,6 +75,7 @@ final class RecipeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $recipe->setUser($this->getUser());
             $em->persist($recipe);
             $em->flush();
             $this->addFlash("success", "La recette a bien été créée");
@@ -74,6 +88,7 @@ final class RecipeController extends AbstractController
     }
 
     #[Route("/{id}", name: "edit", methods: ["GET", "POST"], requirements: ['id' => Requirement::DIGITS])]
+    #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
     public function edit(Recipe $recipe, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(RecipeType::class, $recipe);
@@ -92,6 +107,7 @@ final class RecipeController extends AbstractController
     }
 
     #[Route('/{id}', name: "delete", methods: ["DELETE"], requirements: ['id' => Requirement::DIGITS])]
+    #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
     public function delete(Recipe $recipe, EntityManagerInterface $em): Response
     {
         $em->remove($recipe);

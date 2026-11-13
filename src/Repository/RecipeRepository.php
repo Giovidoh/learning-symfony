@@ -20,14 +20,21 @@ class RecipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Recipe::class);
     }
 
-    public function paginateRecipes(int $page): PaginationInterface
+    public function paginateRecipes(int $page, ?int $userId): PaginationInterface
     {
+        $builder = $this->createQueryBuilder('r')
+            ->select('r', 'c')
+            ->leftJoin('r.category', 'c');
+
+        if ($userId) {
+            $builder = $builder->andWhere('r.user = :user')
+                ->setParameter('user', $userId);
+        }
+
         return $this->paginator->paginate(
-            $this->createQueryBuilder('r')
-                ->select('r', 'c')
-                ->leftJoin('r.category', 'c'),
+            $builder,
             $page,
-            20  ,
+            20,
             [
                 'distinct' => false,
                 'sortFieldAllowList' => ['r.id', 'r.title']

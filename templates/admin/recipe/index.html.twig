@@ -22,13 +22,15 @@
                     <td>{{ recipe.title }}</td>
                     <td>{{ recipe.category.name|default('') }}</td>
                     <td>
-                        <div class="d-flex gap-2">
-                            <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.edit', {id: recipe.id}) }}">Éditer</a>
-                            <form action="{{ path('admin.recipe.delete', {id: recipe.id}) }}" method="post">
-                                <input type="hidden" name="_method" value="DELETE">
-                                <button class="theme-danger btn-solid btn-styled btn-sm">Supprimer</button>
-                            </form>
-                        </div>
+                        {% if is_granted('RECIPE_EDIT', recipe) %}
+                            <div class="d-flex gap-2">
+                                <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.edit', {id: recipe.id}) }}">Éditer</a>
+                                <form action="{{ path('admin.recipe.delete', {id: recipe.id}) }}" method="post">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button class="theme-danger btn-solid btn-styled btn-sm">Supprimer</button>
+                                </form>
+                            </div>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

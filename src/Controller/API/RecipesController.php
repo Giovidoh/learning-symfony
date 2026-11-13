@@ -4,9 +4,12 @@ namespace App\Controller\API;
 
 use App\DTO\PaginationDTO;
 use App\Entity\Recipe;
+use App\Entity\User;
 use App\Repository\RecipeRepository;
+use App\Security\Voter\RecipeVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,9 +24,17 @@ final class RecipesController extends AbstractController
     public function index(
         RecipeRepository $repository,
         #[MapQueryString()]
-        PaginationDTO $paginationDTO
+        PaginationDTO $paginationDTO,
+        Security $security
     ) {
-        $recipes = $repository->paginateRecipes($paginationDTO?->page);
+        $user = $security->getUser();
+        if (!$user instanceof User) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $userId = $user->getId();
+        $canListAll = $security->isGranted(RecipeVoter::LIST_ALL);
+        $recipes = $repository->paginateRecipes($paginationDTO->page, $canListAll ? null : $userId);
 
         // dd($serializer->serialize($recipes, 'yaml', [
         //     'groups' => ['recipes.index']
@@ -54,6 +65,7 @@ final class RecipesController extends AbstractController
     ) {
         $recipe->setCreatedAt(new \DateTimeImmutable());
         $recipe->setUpdatedAt(new \DateTimeImmutable());
+        $recipe->setUser($this->getUser());
         $em->persist($recipe);
         $em->flush();
 
