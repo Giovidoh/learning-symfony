@@ -5,7 +5,10 @@ info:
 
 http:
   method: GET
-  url: http://localhost:8000/api/recipes
+  url: http://localhost:8000/api/recipes/25
+  headers:
+    - name: Authorization
+      value: Bearer az
   auth: inherit
 
 settings:
