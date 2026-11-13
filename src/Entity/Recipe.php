@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
@@ -21,6 +22,7 @@ class Recipe
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['recipes.index'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
@@ -28,14 +30,17 @@ class Recipe
     // #[BanWord(groups: ["Extra"])] // Associée à un groupe
     #[Assert\Length(min: 5)]
     #[BanWord()]
+    #[Groups(['recipes.index'])]
     private string $title = '';
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5)]
     #[Assert\Regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', message: "Invalid slug")]
+    #[Groups(['recipes.index'])]
     private string $slug = '';
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Groups(['recipes.show'])]
     private string $content = '';
 
     #[ORM\Column]
@@ -48,9 +53,11 @@ class Recipe
     // #[Assert\NotBlank()]
     #[Assert\Positive()]
     #[Assert\LessThan(24 * 60)]
+    #[Groups(['recipes.index'])]
     private ?int $duration = null;
 
     #[ORM\ManyToOne(inversedBy: 'recipes', cascade: ['persist'])]
+    #[Groups(['recipes.show'])]
     private ?Category $category = null;
 
 
