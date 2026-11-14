@@ -5,7 +5,10 @@ namespace App\Repository;
 use App\DTO\CategoryWithCountDTO;
 use App\Entity\Category;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
+use Gedmo\Translatable\Query\TreeWalker\TranslationWalker;
+use Gedmo\Translatable\TranslatableListener;
 
 /**
  * @extends ServiceEntityRepository<Category>
@@ -39,6 +42,21 @@ class CategoryRepository extends ServiceEntityRepository
             ->leftJoin('c.recipes', 'r')
             ->groupBy('c.id')
             ->getQuery()
+            // Définir le traducteur
+            ->setHint(
+                Query::HINT_CUSTOM_OUTPUT_WALKER,
+                TranslationWalker::class
+            )
+            // // Forcer dans quelle langue on veut récupérer les données
+            // ->setHint(
+            //     TranslatableListener::HINT_TRANSLATABLE_LOCALE,
+            //     'en'
+            // )
+            // Fallback au cas où null
+            ->setHint(
+                TranslatableListener::HINT_FALLBACK,
+                1
+            )
             ->getResult();
     }
 

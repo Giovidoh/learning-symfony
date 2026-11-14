@@ -1,0 +1,7 @@
+contactForm:
+    name: Nom
+    email: Courriel
+    service: Service
+    message: Message
+    submit: Envoyer l'email
+Welcome: Bonjour :name

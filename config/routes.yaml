@@ -7,5 +7,27 @@
 # To list all registered routes, run the following command:
 #   bin/console debug:router
 
+# Pages HTML : la langue est dans l'URL (/fr/..., /en/...)
 controllers:
-    resource: routing.controllers   
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+    exclude: ../src/Controller/API/
+    prefix: /{_locale}
+    requirements:
+        _locale: "%app.locales%"
+
+# API : pas de langue dans l'URL (le client envoie Accept-Language si besoin)
+api:
+    resource:
+        path: ../src/Controller/API/
+        namespace: App\Controller\API
+    type: attribute
+
+# "/" redirige vers l'accueil dans la langue par défaut
+root:
+    path: /
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
+    defaults:
+        route: home

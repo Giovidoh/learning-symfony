@@ -50,8 +50,8 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        return new RedirectResponse('/');
+        // Par nom de route : le _locale de la requête courante est repris automatiquement
+        return new RedirectResponse($this->urlGenerator->generate('home'));
     }
 
     protected function getLoginUrl(Request $request): string

@@ -1,0 +1,7 @@
+contactForm:
+    name: Name
+    email: Email
+    service: Service
+    message: Message
+    submit: Submit
+Welcome: Morning :name

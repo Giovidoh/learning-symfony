@@ -1,0 +1,6 @@
+home_recipe_count: >-
+    {count, plural,
+        =0  {No recipe}
+        =1     {One recipe}
+        other    {# recipes!}
+    }

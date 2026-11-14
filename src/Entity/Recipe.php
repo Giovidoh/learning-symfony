@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
+use Gedmo\Mapping\Annotation\Translatable;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Serializer\Attribute\Groups;
@@ -33,7 +34,8 @@ class Recipe
     #[Assert\Length(min: 5)]
     #[BanWord()]
     #[Groups(['recipes.index', 'recipes.create'])]
-    private string $title = '';
+    #[Translatable]
+    private ?string $title = '';
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(min: 5)]
@@ -92,7 +94,7 @@ class Recipe
 
     public function getTitle(): string
     {
-        return $this->title;
+        return $this->title ?? '';
     }
 
     public function setTitle(string $title): static
