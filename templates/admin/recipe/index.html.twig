@@ -6,6 +6,9 @@
     <div class="mb-4">
         <a class="theme-primary btn-solid btn-styled btn-sm" href="{{ path('admin.recipe.create') }}">Créer une recette</a>
     </div>
+
+    <div id="flash"></div>
+
     <table class="table">
         <thead>
             <tr>
@@ -17,9 +20,13 @@
         </thead>
         <tbody>
             {% for recipe in recipes %}
-                <tr>
+                <tr id="row_recipe_{{ recipe.id }}">
                     <td>{{ recipe.id }}</td>
-                    <td>{{ recipe.title }}</td>
+                    <td>
+                        <turbo-frame id="recipe_{{ recipe.id }}">
+                            <a href="{{ path('admin.recipe.edit', {id: recipe.id}) }}">{{ recipe.title }}</a>
+                        </turbo-frame>
+                    </td>
                     <td>{{ recipe.category.name|default('') }}</td>
                     <td>
                         {% if is_granted('RECIPE_EDIT', recipe) %}

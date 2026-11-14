@@ -6,13 +6,18 @@ use App\Entity\User;
 use App\Event\ContactRequestEvent;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 class MailingSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private readonly MailerInterface $mailer) {}
+    public function __construct(
+        private readonly MailerInterface $mailer,
+        private readonly LoggerInterface $logger,
+    ) {}
 
     public function onContactRequestEvent(ContactRequestEvent $event): void
     {
@@ -39,7 +44,13 @@ class MailingSubscriber implements EventSubscriberInterface
             ->from('support@demo.fr')
             ->subject('Connexion')
             ->text('Vous vous êtes connecté.');
-        $this->mailer->send($mail);
+
+        // E-mail secondaire : un SMTP en panne ne doit pas faire échouer la connexion
+        try {
+            $this->mailer->send($mail);
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->error('Échec de l\'envoi du mail de connexion', ['exception' => $e]);
+        }
     }
 
     public static function getSubscribedEvents(): array
