@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title recipe.title %}
+
+{% block body %}
+    <h1>{{ recipe.title }}</h1>
+
+    <p>
+        {% if recipe.category %}{{ recipe.category.name }} · {% endif %}
+        {% if recipe.duration %}{{ recipe.duration }} min{% endif %}
+    </p>
+
+    {% if recipe.quantities is not empty %}
+        <h2>Ingrédients</h2>
+        <ul>
+            {% for quantity in recipe.quantities %}
+                <li>{{ quantity.quantity }} {{ quantity.unit }} {{ quantity.ingredient.name }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h2>Préparation</h2>
+    <p>{{ recipe.content|nl2br }}</p>
+{% endblock %}
