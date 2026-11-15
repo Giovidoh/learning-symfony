@@ -7,6 +7,7 @@ use App\Entity\Recipe;
 use App\Entity\User;
 use App\Repository\RecipeRepository;
 use App\Security\Voter\RecipeVoter;
+use App\ValueResolver\Attribute\MapHydratedEntity;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -45,7 +46,8 @@ final class RecipesController extends AbstractController
         ]);
     }
 
-    #[Route("/api/recipes/{id}", requirements: ['id' => Requirement::DIGITS])]
+    // methods GET obligatoire : sinon cette route capte aussi les PUT (déclarée avant update)
+    #[Route("/api/recipes/{id}", methods: ['GET'], requirements: ['id' => Requirement::DIGITS])]
     public function show(Recipe $recipe)
     {
         return $this->json($recipe, 200, [], [
@@ -67,6 +69,22 @@ final class RecipesController extends AbstractController
         $recipe->setUpdatedAt(new \DateTimeImmutable());
         $recipe->setUser($this->getUser());
         $em->persist($recipe);
+        $em->flush();
+
+        return $this->json($recipe, 200, [], [
+            'groups' => ['recipes.index', 'recipes.show']
+        ]);
+    }
+
+    #[Route('/api/recipes/{id}', methods: ['PUT'], requirements: ['id' => Requirement::DIGITS])]
+    #[IsGranted(RecipeVoter::EDIT, subject: 'recipe')]
+    public function update(
+        // recipes.create = les champs que le client peut envoyer (title, slug, content, duration)
+        #[MapHydratedEntity(groups: ['recipes.create'])]
+        Recipe $recipe,
+        EntityManagerInterface $em
+    ) {
+        $recipe->setUpdatedAt(new \DateTimeImmutable());
         $em->flush();
 
         return $this->json($recipe, 200, [], [

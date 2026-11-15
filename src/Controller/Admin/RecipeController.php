@@ -69,6 +69,17 @@ final class RecipeController extends AbstractController
         ]);
     }
 
+    /**
+     * Page publique d'une recette : c'est elle que Gotenberg convertit en PDF.
+     */
+    #[Route('/recettes/{id}', name: 'recipe.show', methods: ['GET'], requirements: ['id' => Requirement::DIGITS])]
+    public function show(Recipe $recipe): Response
+    {
+        return $this->render('recipe/show.html.twig', [
+            'recipe' => $recipe,
+        ]);
+    }
+
     #[Route("/create", name: "create", methods: ["GET", "POST"])]
     #[IsGranted(RecipeVoter::CREATE)]
     public function create(Request $request, EntityManagerInterface $em): Response
